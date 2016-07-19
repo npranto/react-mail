@@ -1,26 +1,47 @@
 import React from "react";
+import { Link } from "react-router";
+
+import { getMessages } from "../services/messageService";
+
+import MessageLink from "./MessageLink";
 
 export default class Inbox extends React.Component {
-	constructor( props ) {
-		super( props );
+    constructor( props ) {
+        super( props );
 
-		this.state = { messages: [] };
-	}
+        this.state = { messages: [] };
+    }
 
-	render() {
-		const styles = this.getStyles();
+    componentWillMount() {
+        this.setState( { messages: getMessages() } );
+    }
 
-		return (
-			<div style={ styles.wrapper }>
-				<div style={ styles.messageLinkWrapper }>
+    render() {
+        const styles = this.getStyles();
+        const messages = this.state.messages.map( message => (
+            <Link
+                key={ message._id }
+                to={ `/inbox/${ message._id }` }
+            >
+                <MessageLink
+                    email={ message.email }
+                    key={ message._id }
+                    name={ message.name }
+                />
+            </Link>
+        ) );
 
-				</div>
-				<div style={ styles.activeMessageWrapper }>
-
-				</div>
-			</div>
-		);
-	}
+        return (
+            <div style={ styles.wrapper }>
+                <div style={ styles.messageLinkWrapper }>
+                    { messages }
+                </div>
+                <div style={ styles.activeMessageWrapper }>
+                    { this.props.children }
+                </div>
+            </div>
+        );
+    }
 
 	getStyles() {
 		return {
